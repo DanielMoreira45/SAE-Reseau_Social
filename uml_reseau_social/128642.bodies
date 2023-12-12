@@ -1,0 +1,5 @@
+class ClientHandler
+!!!142082.java!!!	ClientHandler(inout socket : Socket)
+        this.socket = socket;
+!!!142210.java!!!	run() : void
+        

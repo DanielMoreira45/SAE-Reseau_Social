@@ -1,0 +1,15 @@
+class Serveur
+!!!134530.java!!!	main(in args : String [[]]) : void
+    try{
+      ServerSocket serverSock = new ServerSocket(4444);
+      Socket clientSocket = serverSock.accept();
+      System.out.println("Client connecté");
+      InputStreamReader stream = new InputStreamReader(clientSocket.getInputStream());
+      BufferedReader reader = new BufferedReader(stream);
+      String message = reader.readLine();
+      System.out.println(message);
+      clientSocket.close();
+      serverSock.close();
+    }catch(Exception e){
+      e.printStackTrace();
+    }

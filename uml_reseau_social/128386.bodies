@@ -1,0 +1,38 @@
+class Client
+!!!134658.java!!!	Client(in pseudo : String)
+    this.pseudo = pseudo;
+    abonnements = new ArrayList<>();
+    abonnes = new ArrayList<>();
+!!!134786.java!!!	sAbonner(in user : Client) : void
+    user.abonnes.add(this);
+    abonnements.add(user);
+!!!141570.java!!!	nbAbonnes() : int
+return abonnes.size();
+!!!141698.java!!!	nbAbonnements() : int
+return abonnements.size();
+!!!141826.java!!!	getPseudo() : String
+return pseudo;
+!!!141954.java!!!	toString() : String
+    return pseudo;
+!!!134914.java!!!	main(in args : String [[]]) : void
+    try{
+      Scanner scannerClient = new Scanner(System.in);
+      System.out.println("Création de votre compte : \n Entrez un pseudo : ");
+      String pseudo = scannerClient.nextLine();
+      Client client = new Client(pseudo);
+
+      Socket socket = new Socket("127.0.0.1", 4444);
+      Scanner scannerMessage = new Scanner(System.in);
+      System.out.println("Ecrivez quelque chose : ");
+
+      PrintWriter writer = new PrintWriter(socket.getOutputStream());
+      Message msg = new Message(scannerMessage.next(), client);
+      writer.println(msg);
+      writer.flush();
+
+      scannerClient.close();
+      scannerMessage.close();
+      socket.close();
+    }catch(Exception e){
+      e.printStackTrace();
+    }

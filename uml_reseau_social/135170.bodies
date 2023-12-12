@@ -1,0 +1,9 @@
+class Message
+!!!135042.java!!!	Message(in contenu : string, inout expediteur : Client)
+    this.expediteur = expediteur;
+    this.contenu = contenu;
+    id += 1;
+    dateHeure = new Date();
+    nbLikes = 0;
+!!!142338.java!!!	toString() : String
+    return "Envoyé le : " + dateHeure + "  de : " + expediteur + " -->  " + contenu;
