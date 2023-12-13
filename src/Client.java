@@ -1,13 +1,11 @@
-import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Socket;
-import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-class Client {
+class Client implements Serializable{
   private String pseudo;
   private List<Client> abonnements;
   private List<Client> abonnes;
@@ -32,6 +30,7 @@ class Client {
     return pseudo;
   }
 
+
   public static void main(String[] args){
     try{
       Scanner scannerClient = new Scanner(System.in);
@@ -43,23 +42,18 @@ class Client {
       Scanner scannerMessage = new Scanner(System.in);
       System.out.println("Ecrivez quelque chose : ");
 
-      PrintWriter writer = new PrintWriter(socket.getOutputStream());
+      // PrintWriter writer = new PrintWriter(socket.getOutputStream());
+      ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
       Message msg = new Message(scannerMessage.next(), client);
-      writer.println(msg);
-      writer.flush();
+      objectOutputStream.writeObject(msg);
+      objectOutputStream.flush();
 
-      FileWriter fileWriter = new FileWriter(new File("./src/messages.json"));
-      String user = msg.getExpediteur();
-      Date date = msg.getDate();
-      String contenu = msg.getContenu();
-      String jsonContent = "{ \n \"Utilisateur\" : " + "\"" + user + "\"," + "\n \"Date\" : " + "\"" + date + "\"," + "\n \"Contenu\" : " + "\"" + contenu + "\" \n}";
-      fileWriter.write(jsonContent);
-      fileWriter.flush();
+      
 
       scannerClient.close();
       scannerMessage.close();
       socket.close();
-      fileWriter.close();
+      
     }catch(Exception e){
       e.printStackTrace();
     }

@@ -1,16 +1,22 @@
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Date;
 
 class Message implements Serializable {
-  private Client expediteur;
+  private String expediteur;
   private int id;
   private String contenu;
   private Date dateHeure;
   private int nbLikes;
 
   public Message(String contenu, Client expediteur) {
+    this.expediteur = expediteur.getPseudo();
+    this.contenu = contenu;
+    id += 1;
+    dateHeure = new Date();
+    nbLikes = 0;
+  }
+  
+  public Message(String contenu, String expediteur) {
     this.expediteur = expediteur;
     this.contenu = contenu;
     id += 1;

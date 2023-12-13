@@ -1,27 +1,53 @@
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Date;
+
+import org.json.JSONObject;
 
 class Serveur {
-  public static void main(String[] args) throws IOException{
+  public static void main(String[] args) throws IOException {
+    Serveur serveur = new Serveur();
+    serveur.start();
+  }
+
+  public void init() {
+
+    System.out.println("Serveur initialisé");
+  }
+
+  public void close() {
+
+    System.out.println("Serveur fermé");
+  }
+
+  public void start() throws IOException {
     ServerSocket serverSock = new ServerSocket(4444);
-    while (true){
+    System.out.println("Serveur démarré");
+    while (true) {
       Socket clientSocket = serverSock.accept();
-      Thread t = new Thread(new ClientHandler(clientSocket));
+      Thread t = new Thread(new ClientHandler(this, clientSocket));
       System.out.println("Client connecté");
       t.start();
-
-      InputStreamReader stream = new InputStreamReader(clientSocket.getInputStream());
-      BufferedReader reader = new BufferedReader(stream);
-      String message = reader.readLine();
-      System.out.println(message);
-
-      clientSocket.close();
-      serverSock.close();
+      
     }
+    
+  }
+
+  public void enregistrerMessage(Message msg) throws IOException {
+    FileWriter fileWriter = new FileWriter(new File("./src/messages.json"));
+    String user = msg.getExpediteur();
+    Date date = msg.getDate();
+    String contenu = msg.getContenu();
+    JSONObject message = new JSONObject();
+    message.put("Utilisateur", user);
+    message.put("Date", date);
+    message.put("Contenu", contenu);
+    
+    fileWriter.write(message.toString());
+    fileWriter.flush();
+    fileWriter.close();
   }
 }
