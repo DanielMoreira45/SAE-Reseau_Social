@@ -1,60 +1,84 @@
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
-class Client implements Serializable{
+class Client extends Thread implements Serializable {
   private String pseudo;
-  private List<Client> abonnements;
-  private List<Client> abonnes;
+  private Socket socket;
 
   public Client(String pseudo) {
     this.pseudo = pseudo;
-    abonnements = new ArrayList<>();
-    abonnes = new ArrayList<>();
+    try {
+      this.socket = new Socket("127.0.0.1", 4444);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   public void sAbonner(Client user) {
-    user.abonnes.add(this);
-    abonnements.add(user);
+    return; // TODO
   }
 
-  public int nbAbonnes(){return abonnes.size();}
-  public int nbAbonnements(){return abonnements.size();}
-  public String getPseudo(){return pseudo;}
+  public int nbAbonnes() {
+    return 0; // TODO
+  }
 
-  @Override
-  public String toString(){
+  public int nbAbonnements() {
+    return 0; // TODO
+  }
+
+  public String getPseudo() {
     return pseudo;
   }
 
+  @Override
+  public String toString() {
+    return pseudo;
+  }
 
-  public static void main(String[] args){
-    try{
-      Scanner scannerClient = new Scanner(System.in);
-      System.out.println("Création de votre compte : \n Entrez un pseudo : ");
-      String pseudo = scannerClient.nextLine();
-      Client client = new Client(pseudo);
-
-      Socket socket = new Socket("127.0.0.1", 4444);
+  @Override
+  public void run() {
+    try {
       Scanner scannerMessage = new Scanner(System.in);
       System.out.println("Ecrivez quelque chose : ");
+      String userInput = scannerMessage.next();
+      Message msg = new Message(userInput, this);
+      this.envoieMessage(msg, this.socket);
 
-      // PrintWriter writer = new PrintWriter(socket.getOutputStream());
-      ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-      Message msg = new Message(scannerMessage.next(), client);
-      objectOutputStream.writeObject(msg);
-      objectOutputStream.flush();
+      if (userInput.equals("/list")) {
+        ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+        Message receivedMessage = (Message) objectInputStream.readObject();
+        System.out.println("Received message from server: " + receivedMessage);
+      }
 
-      
-
-      scannerClient.close();
       scannerMessage.close();
       socket.close();
-      
-    }catch(Exception e){
+    } catch (IOException | ClassNotFoundException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void envoieMessage(Message msg, Socket socket) {
+    try {
+      ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+      objectOutputStream.writeObject(msg);
+      objectOutputStream.flush();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  public static void main(String[] args) {
+    try {
+      Scanner scannerClient = new Scanner(System.in);
+      System.out.println("Création de votre compte : \n Entrez un pseudo : ");
+      Client client = new Client(scannerClient.nextLine());
+      System.out.println("Bienvenue " + client.getPseudo());
+      client.start();
+    } catch (Exception e) {
       e.printStackTrace();
     }
   }

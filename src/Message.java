@@ -27,6 +27,8 @@ class Message implements Serializable {
   public String getExpediteur(){return expediteur.toString();}
   public Date getDate(){return dateHeure;}
   public String getContenu(){return contenu;}
+  public int getNbLikes(){return nbLikes;}
+  public int getId(){return id;}
 
   @Override
   public String toString(){
