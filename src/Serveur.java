@@ -1,4 +1,3 @@
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -11,29 +10,27 @@ import org.json.JSONObject;
 class Serveur {
   private FileWriter fileWriter;
   private ServerSocket serverSock;
-
   private HashMap<String, Set<Message>> donnees;
+
+  public Serveur(String filePath){
+    try{
+      this.serverSock = new ServerSocket(4444);
+      this.donnees = new HashMap<>();
+      this.fileWriter = new FileWriter(filePath);
+      System.out.println("Serveur initialisé");
+    }catch (IOException e){
+      e.printStackTrace();
+      System.out.println("Erreur lors de l'initialisation du serveur");
+    }
+  }
 
   public HashMap<String, Set<Message>> getDonnees() {
     return donnees;
   }
 
   public static void main(String[] args) throws IOException {
-    Serveur serveur = new Serveur();
-    serveur.init();
+    Serveur serveur = new Serveur("./src/messages.json");
     serveur.start();
-  }
-
-  public void init() {
-    try {
-      this.fileWriter = new FileWriter(new File("./src/messages.json"));
-      this.serverSock = new ServerSocket(4444);
-      this.donnees = new HashMap<>();
-      System.out.println("Serveur initialisé");
-    } catch (IOException e) {
-      e.printStackTrace();
-      System.out.println("Erreur lors de l'initialisation du serveur");
-    }
   }
 
   public void close() throws IOException {
