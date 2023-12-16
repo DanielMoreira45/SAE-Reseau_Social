@@ -43,53 +43,69 @@ class Client extends Thread {
     return pseudo;
   }
 
+  public void menu(){
+    System.out.println("1. Envoyer un message");
+    System.out.println("2. Utiliser une commande");
+    System.out.println("0. Quitter");
+    System.out.println("Choisissez une option : ");
+  }
+
+  public void optionMessage(Scanner scanner){
+    System.out.println("Ecrivez quelque chose : ");
+    String message = scanner.nextLine();
+    Message msg = new Message(message, this);
+    this.envoiMessage(msg, this.socket);
+    try{
+      ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+      Message receivedMessage = (Message) objectInputStream.readObject();
+      System.out.println("Received message from server: " + receivedMessage);
+    }catch(IOException | ClassNotFoundException e){
+      e.printStackTrace();
+    }
+  }
+
+  public void optionCommandes(Scanner scanner){
+    System.out.println("Voici la liste des commandes disponibles :");
+    System.out.println("--> \\list");
+    System.out.println("--> \\follow");
+    System.out.println("--> \\exit \n");
+    System.out.println("Quelle commande souhaitez-vous utiliser ? ");
+    String message = scanner.nextLine();
+    Message msg = new Message(message, this);
+    this.envoiMessage(msg, socket);
+
+    if (message.equals("/list")) {
+      try{
+        ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+        Message receivedMessage = (Message) objectInputStream.readObject();
+        System.out.println("Received message from server: " + receivedMessage);
+      }catch(IOException | ClassNotFoundException e){
+        e.printStackTrace();
+      }
+    }
+  }
+
   @Override
   public void run() {
     int rep = -1;
     Scanner scannerMessage = new Scanner(System.in);
     while (rep != 0){
-      try {
-        System.out.println("1. Envoyer un message");
-        System.out.println("2. Utiliser une commande");
-        System.out.println("0. Quitter");
-        System.out.println("Choisissez une option : ");
-        String userInput = scannerMessage.nextLine();
-        rep = Integer.parseInt(userInput);
+      menu();
+      String userInput = scannerMessage.nextLine();
+      rep = Integer.parseInt(userInput);
 
-        switch(rep){
-          case 1: {
-            System.out.println("Ecrivez quelque chose : ");
-            String message = scannerMessage.nextLine();
-            Message msg = new Message(message, this);
-            this.envoiMessage(msg, this.socket);
-            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-            Message receivedMessage = (Message) objectInputStream.readObject();
-            System.out.println("Received message from server: " + receivedMessage);
-            break;
-          }
-          case 2: { //Ne marche pas pour le moment
-            System.out.println("Voici la liste des commandes disponibles :");
-            System.out.println("--> \\list");
-            System.out.println("--> \\follow");
-            System.out.println("--> \\exit \n");
-            System.out.println("Quelle commande souhaitez-vous utiliser ? ");
-            String message = scannerMessage.nextLine();
-            Message msg = new Message(message, this);
-            this.envoiMessage(msg, socket);
-            break;
-          }
+      switch(rep){
+        case 1: {
+          optionMessage(scannerMessage);
+          break;
         }
-        System.out.println("\n Appuyez sur Entrée pour continuer");
-        userInput = scannerMessage.nextLine();
-        
-        if (userInput.equals("/list")) {
-          ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-          Message receivedMessage = (Message) objectInputStream.readObject();
-          System.out.println("Received message from server: " + receivedMessage);
+        case 2: { //Ne marche pas pour le moment
+          optionCommandes(scannerMessage);
+          break;
         }
-      } catch (IOException | ClassNotFoundException e) {
-        e.printStackTrace();
       }
+      System.out.println("\n Appuyez sur Entrée pour continuer");
+      userInput = scannerMessage.nextLine();
     }
   }
 
