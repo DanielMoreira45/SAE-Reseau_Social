@@ -17,11 +17,7 @@ class ClientHandler implements Runnable {
         try (ObjectInputStream objectInputStream = new ObjectInputStream(socketClient.getInputStream())) {
             Message receivedMessage = (Message) objectInputStream.readObject();
             System.out.println(receivedMessage);
-            ObjectOutputStream output = new ObjectOutputStream(socketClient.getOutputStream());
-            Message out = new Message("Message reçu par le serveur", "Serveur");
-            output.writeObject(out);
-            output.flush();
-
+            
             String user = receivedMessage.getExpediteur();
             if (!serveur.getDonnees().containsKey(user)) {
                 serveur.getDonnees().put(user, new HashSet<>());
@@ -30,11 +26,6 @@ class ClientHandler implements Runnable {
             if (receivedMessage.getContenu().contains("/")) {
                 switch (receivedMessage.getContenu().split("/")[1]) {
                     case "list":
-                        String liste = "";
-                        for (String key : serveur.getDonnees().keySet()) {
-                            liste += key + "\n";
-                        }
-                        System.out.println("liste " +liste);
                         Message message = new Message("aled", "Serveur");
                         ObjectOutputStream objectOutputStream = new ObjectOutputStream(socketClient.getOutputStream());
                         objectOutputStream.writeObject(message);
@@ -49,11 +40,23 @@ class ClientHandler implements Runnable {
                         break;
                 }
 
+            }else{
+                ObjectOutputStream output = new ObjectOutputStream(socketClient.getOutputStream());
+                Message out = new Message("Message reçu par le serveur", "Serveur");
+                output.writeObject(out);
+                output.flush();
             }
             
             objectInputStream.close();
         } catch (ClassNotFoundException | IOException e1) {
             e1.printStackTrace();
+        }
+        finally {
+            try {
+                socketClient.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

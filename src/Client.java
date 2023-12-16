@@ -7,10 +7,11 @@ import java.util.Scanner;
 class Client extends Thread {
   private String pseudo;
   private Socket socket;
-  private boolean connecte = false;
+  private Scanner scannerClient;
 
-  public Client(String pseudo) {
+  public Client(String pseudo, Scanner scannerClient) {
     this.pseudo = pseudo;
+    this.scannerClient = scannerClient;
     try {
       this.socket = new Socket("127.0.0.1", 4444);
     } catch (IOException e) {
@@ -33,11 +34,7 @@ class Client extends Thread {
   public String getPseudo() {
     return pseudo;
   }
-
-  public void setConnecte(boolean connecte){
-    this.connecte = connecte;
-  }
-
+  
   @Override
   public String toString() {
     return pseudo;
@@ -50,9 +47,9 @@ class Client extends Thread {
     System.out.println("Choisissez une option : ");
   }
 
-  public void optionMessage(Scanner scanner){
+  public void optionMessage(){
     System.out.println("Ecrivez quelque chose : ");
-    String message = scanner.nextLine();
+    String message = this.scannerClient.nextLine();
     Message msg = new Message(message, this);
     this.envoiMessage(msg, this.socket);
     try{
@@ -64,48 +61,59 @@ class Client extends Thread {
     }
   }
 
-  public void optionCommandes(Scanner scanner){
+  public void optionCommandes(){
     System.out.println("Voici la liste des commandes disponibles :");
     System.out.println("--> \\list");
     System.out.println("--> \\follow");
     System.out.println("--> \\exit \n");
     System.out.println("Quelle commande souhaitez-vous utiliser ? ");
-    String message = scanner.nextLine();
+    String message = this.scannerClient.nextLine();
     Message msg = new Message(message, this);
     this.envoiMessage(msg, socket);
-
-    if (message.equals("/list")) {
-      try{
-        ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-        Message receivedMessage = (Message) objectInputStream.readObject();
-        System.out.println("Received message from server: " + receivedMessage);
-      }catch(IOException | ClassNotFoundException e){
-        e.printStackTrace();
-      }
+    try{
+      ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+      Message receivedMessage = (Message) objectInputStream.readObject();
+      System.out.println("Received message from server: " + receivedMessage);
+    }catch(IOException | ClassNotFoundException e){
+      e.printStackTrace();
     }
   }
 
   @Override
   public void run() {
     int rep = -1;
-    Scanner scannerMessage = new Scanner(System.in);
     while (rep != 0){
       menu();
-      String userInput = scannerMessage.nextLine();
+      String userInput = this.scannerClient.nextLine();
       rep = Integer.parseInt(userInput);
 
       switch(rep){
-        case 1: {
-          optionMessage(scannerMessage);
+        case 0: {
+          System.out.println("A bientôt !");
           break;
         }
+
+        case 1: {
+          optionMessage();
+          break;
+        }
+
         case 2: { //Ne marche pas pour le moment
-          optionCommandes(scannerMessage);
+          optionCommandes();
+          break;
+        }
+        default: {
+          System.out.println("Veuillez entrer une option valide");
           break;
         }
       }
       System.out.println("\n Appuyez sur Entrée pour continuer");
-      userInput = scannerMessage.nextLine();
+      userInput = this.scannerClient.nextLine();
+    }
+    try {
+      socket.close();
+    } catch (IOException e) {
+      e.printStackTrace();
     }
   }
 
@@ -124,9 +132,8 @@ class Client extends Thread {
     try {
       Scanner scannerClient = new Scanner(System.in);
       System.out.println("Création de votre compte : \n Entrez un pseudo : ");
-      Client client = new Client(scannerClient.nextLine());
+      Client client = new Client(scannerClient.nextLine(), scannerClient);
       System.out.println("Bienvenue " + client.getPseudo());
-      client.setConnecte(true);
       client.start();
     } catch (Exception e) {
       e.printStackTrace();
