@@ -5,14 +5,13 @@ diagrams
     1451 776 100 A4 0 0
 end
 show_stereotypes
-selected attribute_ref 134530 // pseudo
+selected classview_ref 128130 // diagram
 open
-  class_ref 128130 // Serveur
-  classrelation_ref 134786 // abonnements (<unidirectional association>)
-  classrelation_ref 134914 // abonnes (<unidirectional association>)
-  class_ref 128642 // ClientHandler
-  attribute_ref 135170 // nbLikes
-  operation_ref 135042 // Message
-  deploymentview_ref 128258 // diagram
+  classview_ref 128130 // diagram
+  artifact_ref 128130 // Serveur
+  artifact_ref 128386 // Client
+  artifact_ref 128642 // ClientHandler
+  artifact_ref 135170 // Message
+  classview_ref 134658 // unknown
 end
 end

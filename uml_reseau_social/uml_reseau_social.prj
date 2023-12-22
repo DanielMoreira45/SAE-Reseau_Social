@@ -783,13 +783,6 @@ ${members}};
       java_src "${comment}
 ${package}
 ${imports}
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.HashMap;
-import java.util.Set;
-import org.json.JSONObject;
 ${definition}"
       associated_elems
 	class_ref 128130 // Serveur
@@ -801,11 +794,6 @@ ${definition}"
       java_src "${comment}
 ${package}
 ${imports}
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-import java.util.Scanner;
 ${definition}"
       associated_elems
 	class_ref 128386 // Client
@@ -817,11 +805,6 @@ ${definition}"
       java_src "${comment}
 ${package}
 ${imports}
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-import java.util.HashSet;
 ${definition}"
       associated_elems
 	class_ref 128642 // ClientHandler
@@ -833,11 +816,38 @@ ${definition}"
       java_src "${comment}
 ${package}
 ${imports}
-import java.io.Serializable;
-import java.util.Date;
 ${definition}"
       associated_elems
 	class_ref 135170 // Message
+      end
+    end
+
+    artifact 141698 "Runnable"
+      stereotype "source"
+      java_src "${comment}
+${package}
+${imports}
+${definition}"
+      php_src "<?php
+${comment}
+${namespace}
+${require_once}
+${use}
+${definition}
+?>
+"
+      idl_src "#ifndef ${MODULE}_${NAME}_H
+#define ${MODULE}_${NAME}_H
+
+${comment}
+${includes}
+${module_start}
+${definition}
+${module_end}
+#endif
+"
+      associated_elems
+	class_ref 141698 // Runnable
       end
     end
   end
