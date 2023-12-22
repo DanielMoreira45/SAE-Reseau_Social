@@ -1,9 +1,25 @@
 class Message
 !!!135042.java!!!	Message(in contenu : string, inout expediteur : Client)
+    this.expediteur = expediteur.getPseudo();
+    this.contenu = contenu;
+    id += 1;
+    dateHeure = new Date();
+    nbLikes = 0;
+!!!150146.java!!!	Message(in contenu : String, in expediteur : String)
     this.expediteur = expediteur;
     this.contenu = contenu;
     id += 1;
     dateHeure = new Date();
     nbLikes = 0;
+!!!150274.java!!!	getExpediteur() : String
+return expediteur.toString();
+!!!150402.java!!!	getDate() : Date
+return dateHeure;
+!!!150530.java!!!	getContenu() : String
+return contenu;
+!!!150658.java!!!	getNbLikes() : int
+return nbLikes;
+!!!150786.java!!!	getId() : int
+return id;
 !!!142338.java!!!	toString() : String
     return "Envoyé le : " + dateHeure + "  de : " + expediteur + " -->  " + contenu;

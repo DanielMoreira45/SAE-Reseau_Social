@@ -1,15 +1,37 @@
 class Serveur
-!!!134530.java!!!	main(in args : String [[]]) : void
+!!!148866.java!!!	Serveur(in filePath : String)
     try{
-      ServerSocket serverSock = new ServerSocket(4444);
-      Socket clientSocket = serverSock.accept();
-      System.out.println("Client connecté");
-      InputStreamReader stream = new InputStreamReader(clientSocket.getInputStream());
-      BufferedReader reader = new BufferedReader(stream);
-      String message = reader.readLine();
-      System.out.println(message);
-      clientSocket.close();
-      serverSock.close();
-    }catch(Exception e){
+      this.serverSock = new ServerSocket(4444);
+      this.donnees = new HashMap<>();
+      this.fileWriter = new FileWriter(filePath);
+      System.out.println("Serveur initialisé");
+    }catch (IOException e){
       e.printStackTrace();
+      System.out.println("Erreur lors de l'initialisation du serveur");
     }
+!!!148994.java!!!	getDonnees() : HashMap<String, Set<Message>>
+    return donnees;
+!!!134530.java!!!	main(in args : String [[]]) : void
+    Serveur serveur = new Serveur("./src/messages.json");
+    serveur.start();
+!!!149122.java!!!	close() : void
+    this.serverSock.close();
+    System.out.println("Serveur fermé");
+!!!149250.java!!!	start() : void
+    System.out.println("Serveur démarré");
+    while (true) {
+      Socket clientSocket = this.serverSock.accept();
+      Thread t = new Thread(new ClientHandler(this, clientSocket));
+      System.out.println("Client connecté");
+      t.start();
+    }
+!!!149378.java!!!	enregistrement() : void
+    // TODO
+    JSONObject message = new JSONObject();
+    // message.put("Utilisateur", user);
+    // message.put("Date", date);
+    // message.put("Contenu", contenu);
+
+    fileWriter.write(message.toString());
+    fileWriter.flush();
+    fileWriter.close();

@@ -1,38 +1,114 @@
 class Client
-!!!134658.java!!!	Client(in pseudo : String)
-    this.pseudo = pseudo;
-    abonnements = new ArrayList<>();
-    abonnes = new ArrayList<>();
+!!!134658.java!!!	Client(in pseudo : String, inout scannerClient : Scanner)
+		this.pseudo = pseudo;
+		this.scannerClient = scannerClient;
+		try {
+			this.socket = new Socket("127.0.0.1", 4444);
+			this.objectInputStream = null;
+			this.objectOutputStream = null;
+			System.out.println("Client connecté");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 !!!134786.java!!!	sAbonner(in user : Client) : void
-    user.abonnes.add(this);
-    abonnements.add(user);
+		return; // TODO
 !!!141570.java!!!	nbAbonnes() : int
-return abonnes.size();
+		return 0; // TODO
 !!!141698.java!!!	nbAbonnements() : int
-return abonnements.size();
+		return 0; // TODO
 !!!141826.java!!!	getPseudo() : String
 return pseudo;
 !!!141954.java!!!	toString() : String
     return pseudo;
+!!!149506.java!!!	menu() : void
+		System.out.println("1. Envoyer un message");
+		System.out.println("2. Utiliser une commande");
+		System.out.println("0. Quitter");
+		System.out.println("Choisissez une option : ");
+!!!149634.java!!!	optionMessage() : void
+		System.out.println("Ecrivez quelque chose : ");
+		String message = this.scannerClient.nextLine();
+		Message msg = new Message(message, this);
+		this.envoiMessage(msg, this.socket);
+		try {
+			if (this.objectInputStream == null){
+				this.objectInputStream = new ObjectInputStream(this.socket.getInputStream());
+			}
+			Message receivedMessage = (Message) this.objectInputStream.readObject();
+			System.out.println("Received message from server: " + receivedMessage);
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+!!!149762.java!!!	optionCommandes() : void
+		System.out.println("Voici la liste des commandes disponibles :");
+		System.out.println("--> \\list");
+		System.out.println("--> \\follow");
+		System.out.println("--> \\exit \n");
+		System.out.println("Quelle commande souhaitez-vous utiliser ? ");
+		String message = this.scannerClient.nextLine();
+		Message msg = new Message(message, this);
+		this.envoiMessage(msg, socket);
+		try {
+			if (this.objectInputStream == null){
+				this.objectInputStream = new ObjectInputStream(this.socket.getInputStream());
+			}
+			Message receivedMessage = (Message) this.objectInputStream.readObject();
+			System.out.println("Received message from server: " + receivedMessage);
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+!!!149890.java!!!	run() : void
+		int rep = -1;
+		while (rep != 0) {
+			menu();
+			String userInput = this.scannerClient.nextLine();
+			rep = Integer.parseInt(userInput);
+
+			switch (rep) {
+				case 0: {
+					System.out.println("A bientôt !");
+					break;
+				}
+
+				case 1: {
+					optionMessage();
+					break;
+				}
+
+				case 2: { // Ne marche pas pour le moment
+					optionCommandes();
+					break;
+				}
+				default: {
+					System.out.println("Veuillez entrer une option valide");
+					break;
+				}
+			}
+			System.out.println("\n Appuyez sur Entrée pour continuer");
+			userInput = this.scannerClient.nextLine();
+		}
+		try {
+			socket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+!!!150018.java!!!	envoiMessage(inout msg : Message, inout socket : Socket) : void
+		try {
+			if (this.objectOutputStream == null){
+				this.objectOutputStream = new ObjectOutputStream(this.socket.getOutputStream());
+			}
+			this.objectOutputStream.writeObject(msg);
+			this.objectOutputStream.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 !!!134914.java!!!	main(in args : String [[]]) : void
-    try{
-      Scanner scannerClient = new Scanner(System.in);
-      System.out.println("Création de votre compte : \n Entrez un pseudo : ");
-      String pseudo = scannerClient.nextLine();
-      Client client = new Client(pseudo);
-
-      Socket socket = new Socket("127.0.0.1", 4444);
-      Scanner scannerMessage = new Scanner(System.in);
-      System.out.println("Ecrivez quelque chose : ");
-
-      PrintWriter writer = new PrintWriter(socket.getOutputStream());
-      Message msg = new Message(scannerMessage.next(), client);
-      writer.println(msg);
-      writer.flush();
-
-      scannerClient.close();
-      scannerMessage.close();
-      socket.close();
-    }catch(Exception e){
-      e.printStackTrace();
-    }
+		try {
+			Scanner scannerClient = new Scanner(System.in);
+			System.out.println("Création de votre compte : \n Entrez un pseudo : ");
+			Client client = new Client(scannerClient.nextLine(), scannerClient);
+			System.out.println("Bienvenue " + client.getPseudo());
+			client.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}

@@ -1,6 +1,6 @@
 format 224
 "uml_reseau_social"
-  revision 3
+  revision 4
   modified_by 2 "casso"
 
 
@@ -44,7 +44,7 @@ format 224
 
   mark_for_import
   
-  java_dir "E:\\Documents\\IUT\\BUT_Info\\2A\\SAE\\ReseauSocial\\src"
+  java_dir "E:\\Documents\\IUT\\BUT_Info\\2A\\SAE\\SAE-Reseau_social\\src"
   classview 128130 "diagram"
     
     classdiagramsettings member_max_width 0 end
@@ -83,11 +83,75 @@ ${members}}
       explicit_switch_type ""
       mysql_decl ""
       
+      attribute 148226 "fileWriter"
+	private explicit_type "FileWriter"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 148354 "serverSock"
+	private explicit_type "ServerSocket"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 148482 "donnees"
+	private explicit_type "String, Set<Message>"
+	stereotype "HashMap"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${stereotype}<${type}> ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      operation 148866 "Serveur"
+	public explicit_return_type ""
+	nparams 1
+	  param in name "filePath" explicit_type "String"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${synchronized}${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 148994 "getDonnees"
+	public explicit_return_type "HashMap<String, Set<Message>>"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
       operation 134530 "main"
 	class_operation public explicit_return_type "void"
 	nparams 1
 	  param in name "args" explicit_type "String"
 	multiplicity "[]"
+	nexceptions 1
+	  explicit_exception "IOException"
 	
 	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0}[] ${p0}${)}${throws}${staticnl}{
   ${body}}
@@ -96,24 +160,51 @@ ${members}}
 	
 	
       end
-    end
 
-    class 128258 "Serializable"
-      visibility package stereotype "interface"
-      cpp_decl ""
-      java_decl "${comment}${@}${visibility}${static}interface ${name}${extends} {
-${members}}
+      operation 149122 "close"
+	public explicit_return_type "void"
+	nparams 0
+	nexceptions 1
+	  explicit_exception "IOException"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
 "
-      php_decl "${comment}interface ${name}${extends} {
-${members}}
+	
+	
+	
+      end
+
+      operation 149250 "start"
+	public explicit_return_type "void"
+	nparams 0
+	nexceptions 1
+	  explicit_exception "IOException"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
 "
-      python_2_2 python_decl ""
-      idl_decl "${comment}${abstract}${local}interface ${name}${inherit} {
-${members}};
+	
+	
+	
+      end
+
+      operation 149378 "enregistrement"
+	public explicit_return_type "void"
+	nparams 0
+	nexceptions 1
+	  explicit_exception "IOException"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
 "
-      explicit_switch_type ""
-      mysql_decl ""
-      
+	
+	
+	
+	comment "Enregistre toutes les informations dans le fichier JSON
+@throws IOException
+"
+      end
     end
 
     class 128386 "Client"
@@ -128,6 +219,14 @@ ${members}}
       explicit_switch_type ""
       mysql_decl ""
       
+      classrelation 148226 // <generalisation>
+	relation 148226 ---|>
+	  a public
+	    java "${type}"
+	    classrelation_ref 148226 // <generalisation>
+	  b parent class_ref 148226 // Thread
+      end
+
       attribute 134530 "pseudo"
 	private explicit_type "string"
 	cpp_decl ""
@@ -140,32 +239,61 @@ ${members}}
 	MysqlColumn
       end
 
-      classrelation 134786 // abonnements (<unidirectional association>)
-	relation 134786 --->
-	  stereotype "List"
-	  a role_name "abonnements" private
-	    java "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${stereotype}<${type}> ${name}${value};
+      attribute 148610 "socket"
+	private explicit_type "Socket"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
 "
-	    classrelation_ref 134786 // abonnements (<unidirectional association>)
-	  b parent class_ref 128386 // Client
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
       end
 
-      classrelation 134914 // abonnes (<unidirectional association>)
-	relation 134914 --->
-	  stereotype "List"
-	  a role_name "abonnes" private
-	    java "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${stereotype}<${type}> ${name}${value};
+      attribute 148738 "scannerClient"
+	private explicit_type "Scanner"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
 "
-	    classrelation_ref 134914 // abonnes (<unidirectional association>)
-	  b parent class_ref 128386 // Client
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 148866 "objectInputStream"
+	private explicit_type "ObjectInputStream"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 148994 "objectOutputStream"
+	private explicit_type "ObjectOutputStream"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
       end
 
       operation 134658 "Client"
 	public explicit_return_type ""
-	nparams 1
+	nparams 2
 	  param in name "pseudo" explicit_type "String"
+	  param inout name "scannerClient" explicit_type "Scanner"
 	
-	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${synchronized}${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${synchronized}${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
   ${body}}
 "
 	
@@ -236,6 +364,70 @@ ${members}}
 	
       end
 
+      operation 149506 "menu"
+	public explicit_return_type "void"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 149634 "optionMessage"
+	public explicit_return_type "void"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 149762 "optionCommandes"
+	public explicit_return_type "void"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 149890 "run"
+	public explicit_return_type "void"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	java_annotation "@Override
+"
+	
+	
+	
+      end
+
+      operation 150018 "envoiMessage"
+	public explicit_return_type "void"
+	nparams 2
+	  param inout name "msg" type class_ref 135170 // Message
+	  param inout name "socket" explicit_type "Socket"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
       operation 134914 "main"
 	class_operation public explicit_return_type "void"
 	nparams 1
@@ -250,6 +442,25 @@ ${members}}
 	
       end
 
+      classrelation 134786 // abonnements (<unidirectional association>)
+	relation 134786 --->
+	  stereotype "List"
+	  a role_name "abonnements" private
+	    java "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${stereotype}<${type}> ${name}${value};
+"
+	    classrelation_ref 134786 // abonnements (<unidirectional association>)
+	  b parent class_ref 128386 // Client
+      end
+
+      classrelation 134914 // abonnes (<unidirectional association>)
+	relation 134914 --->
+	  stereotype "List"
+	  a role_name "abonnes" private
+	    java "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${stereotype}<${type}> ${name}${value};
+"
+	    classrelation_ref 134914 // abonnes (<unidirectional association>)
+	  b parent class_ref 128386 // Client
+      end
     end
 
     class 128642 "ClientHandler"
@@ -272,8 +483,53 @@ ${members}}
 	  b parent class_ref 141698 // Runnable
       end
 
-      attribute 141698 "socket"
+      attribute 149122 "socketClient"
 	private explicit_type "Socket"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      classrelation 148354 // serveur (<unidirectional association>)
+	relation 148354 --->
+	  a role_name "serveur" private
+	    java "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	    classrelation_ref 148354 // serveur (<unidirectional association>)
+	  b parent class_ref 128130 // Serveur
+      end
+
+      attribute 149250 "clientQuitte"
+	private explicit_type "boolean"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 149378 "objectInputStream"
+	private explicit_type "ObjectInputStream"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 149506 "objectOutputStream"
+	private explicit_type "ObjectOutputStream"
 	cpp_decl ""
 	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
 "
@@ -286,10 +542,11 @@ ${members}}
 
       operation 142082 "ClientHandler"
 	public explicit_return_type ""
-	nparams 1
-	  param inout name "socket" explicit_type "Socket"
+	nparams 2
+	  param inout name "serv" type class_ref 128130 // Serveur
+	  param inout name "socketClient" explicit_type "Socket"
 	
-	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${synchronized}${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${synchronized}${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
   ${body}}
 "
 	
@@ -308,6 +565,18 @@ ${members}}
 	
 	
       end
+
+      attribute 141698 "socket"
+	private explicit_type "Socket"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
     end
 
     class 135170 "Message"
@@ -322,22 +591,16 @@ ${members}}
       explicit_switch_type ""
       mysql_decl ""
       
-      classrelation 134658 // <realization>
-	relation 134658 -_-|>
-	  a public
-	    java "${type}"
-	    classrelation_ref 134658 // <realization>
-	  b parent class_ref 128258 // Serializable
-      end
-
-      classrelation 135042 // expediteur (<unidirectional association>)
-	relation 135042 --->
-	  stereotype "string"
-	  a role_name "expediteur" private
-	    java "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+      attribute 149634 "expediteur"
+	private explicit_type "String"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
 "
-	    classrelation_ref 135042 // expediteur (<unidirectional association>)
-	  b parent class_ref 128386 // Client
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
       end
 
       attribute 134786 "id"
@@ -402,6 +665,80 @@ ${members}}
 	
       end
 
+      operation 150146 "Message"
+	public explicit_return_type ""
+	nparams 2
+	  param in name "contenu" explicit_type "String"
+	  param in name "expediteur" explicit_type "String"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${synchronized}${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 150274 "getExpediteur"
+	public explicit_return_type "String"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 150402 "getDate"
+	public explicit_return_type "Date"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 150530 "getContenu"
+	public explicit_return_type "String"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 150658 "getNbLikes"
+	public explicit_return_type "int"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 150786 "getId"
+	public explicit_return_type "int"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
       operation 142338 "toString"
 	public explicit_return_type "String"
 	nparams 0
@@ -415,6 +752,7 @@ ${members}}
 	
 	
       end
+
     end
 
     class 141698 "Runnable"
@@ -445,10 +783,13 @@ ${members}};
       java_src "${comment}
 ${package}
 ${imports}
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Set;
+import org.json.JSONObject;
 ${definition}"
       associated_elems
 	class_ref 128130 // Serveur
@@ -460,10 +801,10 @@ ${definition}"
       java_src "${comment}
 ${package}
 ${imports}
-import java.io.PrintWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 ${definition}"
       associated_elems
@@ -476,7 +817,11 @@ ${definition}"
       java_src "${comment}
 ${package}
 ${imports}
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.HashSet;
 ${definition}"
       associated_elems
 	class_ref 128642 // ClientHandler
@@ -488,8 +833,6 @@ ${definition}"
       java_src "${comment}
 ${package}
 ${imports}
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Date;
 ${definition}"
@@ -498,4 +841,6 @@ ${definition}"
       end
     end
   end
+
+  package_ref 128002 // unknown
 end

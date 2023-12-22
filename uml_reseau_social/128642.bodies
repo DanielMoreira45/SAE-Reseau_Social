@@ -1,5 +1,55 @@
 class ClientHandler
-!!!142082.java!!!	ClientHandler(inout socket : Socket)
-        this.socket = socket;
+!!!142082.java!!!	ClientHandler(inout serv : Serveur, inout socketClient : Socket)
+        this.serveur = serv;
+        this.socketClient = socketClient;
+        this.clientQuitte = false;
+        try {
+            this.objectInputStream = new ObjectInputStream(this.socketClient.getInputStream());
+            this.objectOutputStream = new ObjectOutputStream(this.socketClient.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 !!!142210.java!!!	run() : void
-        
+        try {
+            while(!clientQuitte){
+                Message receivedMessage = (Message) this.objectInputStream.readObject();
+                System.out.println(receivedMessage);
+                String user = receivedMessage.getExpediteur();
+                if (!serveur.getDonnees().containsKey(user)) {
+                    serveur.getDonnees().put(user, new HashSet<>());
+                }
+                serveur.getDonnees().get(user).add(receivedMessage);
+                if (receivedMessage.getContenu().contains("/")) {
+                    switch (receivedMessage.getContenu().split("/")[1]) {
+                        case "list":
+                            Message message = new Message("aled", "Serveur");
+                            this.objectOutputStream.writeObject(message);
+                            this.objectOutputStream.flush();
+                            this.objectOutputStream.reset();
+                            break;
+
+                        case "exit":
+                            this.clientQuitte = true;
+                            socketClient.close();
+                            break;
+
+                        default:
+                            break;
+                    }
+                }else{
+                    Message out = new Message("Message reçu par le serveur", "Serveur");
+                    this.objectOutputStream.writeObject(out);
+                    this.objectOutputStream.flush();
+                    this.objectOutputStream.reset();
+                }
+            }
+        }catch (ClassNotFoundException | IOException e1) {
+            e1.printStackTrace();
+        }
+        finally {
+            try {
+                socketClient.close();
+            }catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
