@@ -7,54 +7,57 @@ import java.util.HashSet;
 class ClientHandler implements Runnable {
     private Socket socketClient;
     private Serveur serveur;
+    private boolean clientQuitte;
 
     public ClientHandler(Serveur serv, Socket socketClient) {
         this.serveur = serv;
         this.socketClient = socketClient;
+        this.clientQuitte = false;
     }
 
     public void run() {
-        try (ObjectInputStream objectInputStream = new ObjectInputStream(socketClient.getInputStream())) {
-            Message receivedMessage = (Message) objectInputStream.readObject();
-            System.out.println(receivedMessage);
-            
-            String user = receivedMessage.getExpediteur();
-            if (!serveur.getDonnees().containsKey(user)) {
-                serveur.getDonnees().put(user, new HashSet<>());
-            }
-            serveur.getDonnees().get(user).add(receivedMessage);
-            if (receivedMessage.getContenu().contains("/")) {
-                switch (receivedMessage.getContenu().split("/")[1]) {
-                    case "list":
-                        Message message = new Message("aled", "Serveur");
-                        ObjectOutputStream objectOutputStream = new ObjectOutputStream(socketClient.getOutputStream());
-                        objectOutputStream.writeObject(message);
-                        objectOutputStream.flush();
-                        break;
-
-                    case "exit":
-                        socketClient.close();
-                        serveur.close();
-                        break;
-                    default:
-                        break;
+        try {
+            ObjectInputStream objectInputStream = new ObjectInputStream(socketClient.getInputStream());
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socketClient.getOutputStream());
+            while(!clientQuitte){
+                Message receivedMessage = (Message) objectInputStream.readObject();
+                System.out.println(receivedMessage);
+                String user = receivedMessage.getExpediteur();
+                if (!serveur.getDonnees().containsKey(user)) {
+                    serveur.getDonnees().put(user, new HashSet<>());
                 }
+                serveur.getDonnees().get(user).add(receivedMessage);
+                if (receivedMessage.getContenu().contains("/")) {
+                    switch (receivedMessage.getContenu().split("/")[1]) {
+                        case "list":
+                            Message message = new Message("aled", "Serveur");
+                            objectOutputStream.writeObject(message);
+                            objectOutputStream.flush();
+                            objectOutputStream.reset();
+                            break;
 
-            }else{
-                ObjectOutputStream output = new ObjectOutputStream(socketClient.getOutputStream());
-                Message out = new Message("Message reçu par le serveur", "Serveur");
-                output.writeObject(out);
-                output.flush();
+                        case "exit":
+                            this.clientQuitte = true;
+                            socketClient.close();
+                            break;
+
+                        default:
+                            break;
+                    }
+                }else{
+                    Message out = new Message("Message reçu par le serveur", "Serveur");
+                    objectOutputStream.writeObject(out);
+                    objectOutputStream.flush();
+                    objectOutputStream.reset();
+                }
             }
-            
-            objectInputStream.close();
-        } catch (ClassNotFoundException | IOException e1) {
+        }catch (ClassNotFoundException | IOException e1) {
             e1.printStackTrace();
         }
         finally {
             try {
                 socketClient.close();
-            } catch (IOException e) {
+            }catch (IOException e) {
                 e.printStackTrace();
             }
         }
