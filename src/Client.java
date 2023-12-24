@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.Scanner;
 
 class Client extends Thread {
@@ -25,8 +26,10 @@ class Client extends Thread {
 		}
 	}
 
-	public void sAbonner(Client user) {
-		return; // TODO
+	public void sAbonner(String user) {
+		String message = "follow";
+		Message msg = new Message(message + "-" + user, this);
+		this.envoiMessage(msg, socket);
 	}
 
 	public int nbAbonnes() {
@@ -71,11 +74,20 @@ class Client extends Thread {
 
 	public void optionCommandes() {
 		System.out.println("Voici la liste des commandes disponibles :");
-		System.out.println("--> \\list");
-		System.out.println("--> \\follow");
-		System.out.println("--> \\exit \n");
+		System.out.println("--> /follow");
+		System.out.println("--> /exit \n");
 		System.out.println("Quelle commande souhaitez-vous utiliser ? ");
 		String message = this.scannerClient.nextLine();
+		switch (message) {
+			case "/follow":
+				System.out.println("Quel utilisateur souhaitez-vous suivre ? ");
+				String user = this.scannerClient.nextLine();
+				this.sAbonner(user);
+				break;
+
+			default:
+				break;
+		}
 		Message msg = new Message(message, this);
 		this.envoiMessage(msg, socket);
 		try {

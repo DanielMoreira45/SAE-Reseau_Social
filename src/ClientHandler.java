@@ -2,7 +2,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.HashSet;
 
 class ClientHandler implements Runnable {
     private Socket socketClient;
@@ -29,13 +28,28 @@ class ClientHandler implements Runnable {
                 Message receivedMessage = (Message) this.objectInputStream.readObject();
                 System.out.println(receivedMessage);
                 String user = receivedMessage.getExpediteur();
-                if (!serveur.getDonnees().containsKey(user)) {
-                    serveur.getDonnees().put(user, new HashSet<>());
+                if (!serveur.getPersonne().contains(user)) {
+                    serveur.addPersonne(user);
                 }
-                serveur.getDonnees().get(user).add(receivedMessage);
-                if (receivedMessage.getContenu().contains("/")) {
+                serveur.getMessages(user).add(receivedMessage);
+
+                if(receivedMessage.getContenu().contains("-")){
+                    String[] message = receivedMessage.getContenu().split("-");
+                    String commande = message[0];
+                    String pseudo = message[1];
+                    switch (commande) {
+                        case "follow":
+                            this.serveur.addAbo(user, pseudo);
+                            break;
+                    
+                        default:
+                            break;
+                    }
+                }
+
+                else if (receivedMessage.getContenu().contains("/")) {
                     switch (receivedMessage.getContenu().split("/")[1]) {
-                        case "list":
+                        case "follow":
                             Message message = new Message("aled", "Serveur");
                             this.objectOutputStream.writeObject(message);
                             this.objectOutputStream.flush();
@@ -44,9 +58,13 @@ class ClientHandler implements Runnable {
 
                         case "exit":
                             this.clientQuitte = true;
-                            socketClient.close();
+                            this.socketClient.close();
                             break;
 
+                        case "exitall":
+                            this.clientQuitte = true;
+                            this.serveur.close();
+                            break;
                         default:
                             break;
                     }
