@@ -1,3 +1,5 @@
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -6,7 +8,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 class Serveur {
     private FileWriter fileWriter;
@@ -17,11 +21,49 @@ class Serveur {
         try {
             this.serverSock = new ServerSocket(4444);
             this.donnees = new HashMap<>();
-            this.fileWriter = new FileWriter(filePath);
+            this.extractionJson(filePath);
+            this.fileWriter = new FileWriter(filePath, false);
             System.out.println("Serveur initialisé");
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Erreur lors de l'initialisation du serveur");
+        }
+    }
+
+    public void extractionJson(String filePath) {
+        try {
+            JSONTokener tokener = new JSONTokener(new FileReader(filePath));
+            JSONObject donneesJson = new JSONObject(tokener);
+            JSONObject donneesObjet = donneesJson.getJSONObject("donnees");
+            for (String utilisateur : donneesObjet.keySet()) {
+                JSONObject utilisateurData = donneesObjet.getJSONObject(utilisateur);
+                HashMap<String, HashSet<Object>> utilisateurMap = new HashMap<>();
+
+                // Traitement des messages
+                if (utilisateurData.has("message")) {
+                    JSONArray messagesArray = utilisateurData.getJSONArray("message");
+                    HashSet<Object> messages = new HashSet<>();
+                    for (Object messageObj : messagesArray) {
+                        JSONObject messageData = (JSONObject) messageObj;
+                        messages.add(messageData.toMap());
+                    }
+                    utilisateurMap.put("message", messages);
+                }
+                // Traitement des abonnements
+                if (utilisateurData.has("abo")) {
+                    JSONArray abonnementsArray = utilisateurData.getJSONArray("abo");
+                    HashSet<Object> abonnements = new HashSet<>();
+                    for (Object abonnement : abonnementsArray) {
+                        abonnements.add(abonnement);
+                    }
+                    utilisateurMap.put("abo", abonnements);
+                }
+
+                donnees.put(utilisateur, utilisateurMap);
+            }
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 
@@ -96,4 +138,3 @@ class Serveur {
         serveur.start();
     }
 }
-   
