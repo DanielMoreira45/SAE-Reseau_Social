@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 class Serveur {
-    private FileWriter fileWriter;
+    private String filePath;
     private ServerSocket serverSock;
     private HashMap<String, HashMap<String, HashSet<Object>>> donnees;
 
@@ -21,8 +21,7 @@ class Serveur {
         try {
             this.serverSock = new ServerSocket(4444);
             this.donnees = new HashMap<>();
-            this.extractionJson(filePath);
-            this.fileWriter = new FileWriter(filePath, false);
+            this.filePath = filePath;
             System.out.println("Serveur initialisé");
         } catch (IOException e) {
             e.printStackTrace();
@@ -128,6 +127,8 @@ class Serveur {
     public void enregistrement() throws IOException {
         JSONObject message = new JSONObject();
         message.put("donnees", this.donnees);
+        this.extractionJson(filePath);
+        FileWriter fileWriter = new FileWriter(filePath, false);
         fileWriter.write(message.toString());
         fileWriter.flush();
         fileWriter.close();

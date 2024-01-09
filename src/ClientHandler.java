@@ -52,7 +52,9 @@ class ClientHandler implements Runnable {
                             this.objectOutputStream.reset();
                             break;
 
-                        
+                        case "enregistre":
+                            this.serveur.enregistrement();
+                            break;
 
                         case "exit":
                             this.clientQuitte = true;
