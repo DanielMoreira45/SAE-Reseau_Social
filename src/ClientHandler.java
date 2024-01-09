@@ -31,7 +31,7 @@ class ClientHandler implements Runnable {
                 if (!serveur.getPersonne().contains(user)) {
                     serveur.addPersonne(user);
                 }
-                serveur.getMessages(user).add(receivedMessage);
+                serveur.getMessages(user).add(receivedMessage.getJson());
 
                 if(receivedMessage.getContenu().contains("-")){
                     String[] message = receivedMessage.getContenu().split("-");
@@ -41,17 +41,13 @@ class ClientHandler implements Runnable {
                         case "follow":
                             this.serveur.addAbo(user, pseudo);
                             break;
-                    
-                        default:
+                        case "unfollow":
+                            this.serveur.removeAbo(user, pseudo);
                             break;
-                    }
-                }
 
-                else if (receivedMessage.getContenu().contains("/")) {
-                    switch (receivedMessage.getContenu().split("/")[1]) {
-                        case "follow":
-                            Message message = new Message("aled", "Serveur");
-                            this.objectOutputStream.writeObject(message);
+                        case "listefollow":
+                            Message out = new Message(this.serveur.getAbo(user).toString(), "Serveur");
+                            this.objectOutputStream.writeObject(out);
                             this.objectOutputStream.flush();
                             this.objectOutputStream.reset();
                             break;
@@ -60,7 +56,6 @@ class ClientHandler implements Runnable {
                             this.clientQuitte = true;
                             this.socketClient.close();
                             break;
-
                         case "exitall":
                             this.clientQuitte = true;
                             this.serveur.close();
@@ -77,13 +72,6 @@ class ClientHandler implements Runnable {
             }
         }catch (ClassNotFoundException | IOException e1) {
             e1.printStackTrace();
-        }
-        finally {
-            try {
-                socketClient.close();
-            }catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 }

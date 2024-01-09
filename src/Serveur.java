@@ -37,10 +37,6 @@ class Serveur {
         return this.donnees.get(user).get("abo");
     }
 
-    public void print() {
-        System.out.println(this.donnees);
-    }
-
     public void addPersonne(String user) {
         HashSet<Object> setMessage = new HashSet<>();
         HashSet<Object> setabo = new HashSet<>();
@@ -53,6 +49,14 @@ class Serveur {
     public boolean addAbo(String user, String nomAbo) {
         if (this.donnees.containsKey(nomAbo)) {
             this.getAbo(user).add(nomAbo);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean removeAbo(String user, String nomAbo) {
+        if (this.donnees.containsKey(nomAbo)) {
+            this.getAbo(user).remove(nomAbo);
             return true;
         }
         return false;
@@ -85,7 +89,6 @@ class Serveur {
      * @throws IOException
      */
     public void enregistrement() throws IOException {
-        this.print();
         JSONObject message = new JSONObject();
         message.put("donnees", this.donnees);
         fileWriter.write(message.toString());

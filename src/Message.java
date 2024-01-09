@@ -1,5 +1,6 @@
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 
 class Message implements Serializable {
 	private String expediteur;
@@ -42,6 +43,15 @@ class Message implements Serializable {
 
 	public int getId() {
 		return id;
+	}
+
+	public HashMap<String,String> getJson(){
+		HashMap<String, String> json = new HashMap<String, String>();
+		json.put("id", Integer.toString(id));
+		json.put("contenu", contenu);
+		json.put("dateHeure", dateHeure.toString());
+		json.put("nbLikes", Integer.toString(nbLikes));
+		return json;
 	}
 
 	@Override

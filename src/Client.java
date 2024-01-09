@@ -2,7 +2,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 class Client extends Thread {
@@ -29,7 +30,20 @@ class Client extends Thread {
 	public void sAbonner(String user) {
 		String message = "follow";
 		Message msg = new Message(message + "-" + user, this);
+		this.envoiMessage(msg, socket);		
+	}
+
+	public void seDAbonner(String user){
+		String message = "unfollow";
+		Message msg = new Message(message + "-" + user, this);
 		this.envoiMessage(msg, socket);
+	}
+
+	public void listeAbonnements() {
+		Message msg = new Message("listefollow-"+this.pseudo, this);
+		this.envoiMessage(msg, socket);
+		Message receivedMessage = this.recevoirMessage();
+		System.out.println(receivedMessage.getContenu());
 	}
 
 	public int nbAbonnes() {
@@ -61,20 +75,16 @@ class Client extends Thread {
 		String message = this.scannerClient.nextLine();
 		Message msg = new Message(message, this);
 		this.envoiMessage(msg, this.socket);
-		try {
-			if (this.objectInputStream == null){
-				this.objectInputStream = new ObjectInputStream(this.socket.getInputStream());
-			}
-			Message receivedMessage = (Message) this.objectInputStream.readObject();
-			System.out.println("Received message from server: " + receivedMessage);
-		} catch (IOException | ClassNotFoundException e) {
-			e.printStackTrace();
-		}
+		this.recevoirMessage();
 	}
 
 	public void optionCommandes() {
 		System.out.println("Voici la liste des commandes disponibles :");
 		System.out.println("--> /follow");
+		System.out.println("--> /unfollow");
+		System.out.println("--> /listefollow");
+		System.out.println("--> /like");
+		System.out.println("--> /delete");
 		System.out.println("--> /exit \n");
 		System.out.println("Quelle commande souhaitez-vous utiliser ? ");
 		String message = this.scannerClient.nextLine();
@@ -85,19 +95,38 @@ class Client extends Thread {
 				this.sAbonner(user);
 				break;
 
+			case "/unfollow":
+				System.out.println("Quel utilisateur souhaitez-vous ne plus suivre ? ");
+				String user2 = this.scannerClient.nextLine();
+				this.seDAbonner(user2);
+				break;
+			
+			case "/listefollow":
+				this.listeAbonnements();
+				break;
+
+			case "/like":
+				// TODO
+				break;
+
+			case "/delete":
+				// TODO
+				break;
+
+			case "/exit":
+				System.out.println("A bientôt !");
+				this.envoiMessage(new Message("exit-serv", this), socket);
+				this.scannerClient.close();
+				break;
+
+			case "/exitall":
+				System.out.println("A bientôt !");
+				this.envoiMessage(new Message("exitall-serv", this), socket);
+				this.scannerClient.close();
+				break;
+
 			default:
 				break;
-		}
-		Message msg = new Message(message, this);
-		this.envoiMessage(msg, socket);
-		try {
-			if (this.objectInputStream == null){
-				this.objectInputStream = new ObjectInputStream(this.socket.getInputStream());
-			}
-			Message receivedMessage = (Message) this.objectInputStream.readObject();
-			System.out.println("Received message from server: " + receivedMessage);
-		} catch (IOException | ClassNotFoundException e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -120,7 +149,7 @@ class Client extends Thread {
 					break;
 				}
 
-				case 2: { // Ne marche pas pour le moment
+				case 2: {
 					optionCommandes();
 					break;
 				}
@@ -149,6 +178,19 @@ class Client extends Thread {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public Message recevoirMessage(){
+		try {
+			if (this.objectInputStream == null){
+				this.objectInputStream = new ObjectInputStream(this.socket.getInputStream());
+			}
+			Message receivedMessage = (Message) this.objectInputStream.readObject();
+			return receivedMessage;
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public static void main(String[] args) {
