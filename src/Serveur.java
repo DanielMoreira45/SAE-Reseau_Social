@@ -62,11 +62,6 @@ class Serveur {
         return false;
     }
 
-    public static void main(String[] args) throws IOException {
-        Serveur serveur = new Serveur("./src/messages.json");
-        serveur.start();
-    }
-
     public void close() throws IOException {
         this.serverSock.close();
         this.enregistrement();
@@ -95,4 +90,10 @@ class Serveur {
         fileWriter.flush();
         fileWriter.close();
     }
+
+    public static void main(String[] args) throws IOException {
+        Serveur serveur = new Serveur("./src/messages.json");
+        serveur.start();
+    }
 }
+   

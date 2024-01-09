@@ -52,6 +52,8 @@ class ClientHandler implements Runnable {
                             this.objectOutputStream.reset();
                             break;
 
+                        
+
                         case "exit":
                             this.clientQuitte = true;
                             this.socketClient.close();
