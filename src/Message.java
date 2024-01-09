@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 class Message implements Serializable {
 	private String expediteur;
-	private int id;
+	private static int id;
 	private String contenu;
 	private Date dateHeure;
 	private int nbLikes;
