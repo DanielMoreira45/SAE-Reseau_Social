@@ -77,9 +77,14 @@ class Client extends Thread {
 
 	public String listeMessages(String user){
 		String res = "Liste des posts : " + "\n";
+		int cpt = 0;
 		for (Message msg : lesMessages){
-			res += "--> " + msg.getContenu() + " | Nombre de likes : " + msg.getNbLikes() + "\n";
+			if (!msg.getContenu().contains("-")){
+				res += "--> " + msg.getContenu() + " | Nombre de likes : " + msg.getNbLikes() + "\n";
+				cpt += 1;
+			}
 		}
+		res += "\n" + "Nombre de posts : " + cpt;
 		return res;
 	}
 
@@ -156,7 +161,6 @@ class Client extends Thread {
 			
 			case "/mes_posts":
 				System.out.println(this.listeMessages(this.pseudo));
-				System.out.println("Nombre de posts : " + lesMessages.size());
 				break;
 			
 			case "/posts_abonnement":
