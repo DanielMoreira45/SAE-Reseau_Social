@@ -41,6 +41,7 @@ class ClientHandler implements Runnable {
                         case "follow":
                             this.serveur.addAbo(user, pseudo);
                             break;
+
                         case "unfollow":
                             this.serveur.removeAbo(user, pseudo);
                             break;
@@ -52,20 +53,21 @@ class ClientHandler implements Runnable {
                             this.objectOutputStream.reset();
                             break;
 
-                        
-
                         case "exit":
                             this.clientQuitte = true;
                             this.socketClient.close();
                             break;
+
                         case "exitall":
                             this.clientQuitte = true;
                             this.serveur.close();
                             break;
+
                         default:
                             break;
                     }
-                }else{
+                }
+                else{
                     Message out = new Message("Message reçu par le serveur", "Serveur");
                     this.objectOutputStream.writeObject(out);
                     this.objectOutputStream.flush();
