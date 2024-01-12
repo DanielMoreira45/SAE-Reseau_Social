@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Set;
 
 class ClientHandler implements Runnable {
     private Socket socketClient;
@@ -34,7 +35,7 @@ class ClientHandler implements Runnable {
                 serveur.getMessages(user).add(receivedMessage.getJson());
 
                 if(receivedMessage.getContenu().contains("-")){
-                    String[] message = receivedMessage.getContenu().split("-");
+                    String[] message = receivedMessage.getContenu().split("-", 2);
                     String commande = message[0];
                     String pseudo = message[1];
                     switch (commande) {
@@ -49,6 +50,20 @@ class ClientHandler implements Runnable {
                         case "listefollow":
                             Message out = new Message(this.serveur.getAbo(user).toString(), "Serveur");
                             this.objectOutputStream.writeObject(out);
+                            this.objectOutputStream.flush();
+                            this.objectOutputStream.reset();
+                            break;
+                        
+                        case "liste_clients":
+                            Message output = new Message(this.serveur.getPersonne().toString(), "Serveur");
+                            this.objectOutputStream.writeObject(output);
+                            this.objectOutputStream.flush();
+                            this.objectOutputStream.reset();
+                            break;
+                        
+                        case "messages_abonnements":
+                            Message outputt = new Message(this.serveur.messagesAbonnement(user).toString(), "Serveur");
+                            this.objectOutputStream.writeObject(outputt);
                             this.objectOutputStream.flush();
                             this.objectOutputStream.reset();
                             break;

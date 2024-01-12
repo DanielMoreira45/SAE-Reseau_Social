@@ -35,22 +35,17 @@ class Client extends Thread {
 		String message = "follow";
 		Message msg = new Message(message + "-" + user, this);
 		this.envoiMessage(msg, socket);
-		abonnements.add(user);
 	}
 
 	public void seDesabonner(String user){
 		String message = "unfollow";
 		Message msg = new Message(message + "-" + user, this);
 		this.envoiMessage(msg, socket);
-		abonnements.remove(user);
 	}
 
-	public List<String> mesAbonnements(){
-		return abonnements;
-	}
-
-	public void listeAbonnements() {
-		Message msg = new Message("listefollow-"+this.pseudo, this);
+	public void listeAbonnements(String user) {
+		String message = "listefollow";
+		Message msg = new Message(message + "-" + user, this);
 		this.envoiMessage(msg, socket);
 		Message receivedMessage = this.recevoirMessage();
 		System.out.println(receivedMessage.getContenu());
@@ -88,22 +83,24 @@ class Client extends Thread {
 		return res;
 	}
 
-	// dans l'idée il faudrait que je récupère un client dans ma liste d'abonnements puis que je stocke quelque part tous les posts de cet 
-	// utilisateur (il faudrait faire ça pour chacun des abonnements)
-	public HashSet<String> messagesAbonnements(){
-		HashSet<String> messages = new HashSet<>();
-		for (String follow : abonnements){
-			messages.add(listeMessages(follow));
-		}
-		return messages;
+	public void listeClients(String user){
+		String message = "liste_clients";
+		Message msg = new Message(message + "-" + user, this);
+		this.envoiMessage(msg, socket);
+		Message receivedMessage = this.recevoirMessage();
+		System.out.println(receivedMessage.getContenu());
+	}
+
+	public void messagesAbonnements(String user){
+		String message = "messages_abonnements";
+		Message msg = new Message(message + "-" + user, this);
+		envoiMessage(msg, socket);
+		Message receivedMessage = this.recevoirMessage();
+		System.out.println(receivedMessage.getContenu());
 	}
 
 	public int nbAbonnes() {
 		return 0; // TODO
-	}
-
-	public int nbAbonnements() {
-		return abonnements.size();
 	}
 
 	public String getPseudo() {
@@ -145,26 +142,30 @@ class Client extends Thread {
 		switch (message) {
 			case "/follow":
 				System.out.println("Quel utilisateur souhaitez-vous suivre ? ");
+				System.out.println("Voici la liste des utilisateurs existants : ");
+				this.listeClients(this.pseudo);
 				String user = this.scannerClient.nextLine();
 				this.sAbonner(user);
 				break;
 
 			case "/unfollow":
 				System.out.println("Quel utilisateur souhaitez-vous ne plus suivre ? ");
+				System.out.println("Voici votre liste d'abonnements : ");
+				this.listeAbonnements(this.pseudo);
 				String user2 = this.scannerClient.nextLine();
 				this.seDesabonner(user2);
 				break;
-			
+
 			case "/listefollow":
-				this.listeAbonnements();
+				this.listeAbonnements(this.pseudo);
 				break;
-			
+
 			case "/mes_posts":
 				System.out.println(this.listeMessages(this.pseudo));
 				break;
-			
+
 			case "/posts_abonnement":
-				// System.out.println(this.);
+				this.messagesAbonnements(this.pseudo);
 				break;
 
 			case "/like":
@@ -191,6 +192,7 @@ class Client extends Thread {
 				break;
 
 			default:
+				System.out.println("Veuillez entrer une commande valide");
 				break;
 		}
 	}
@@ -201,30 +203,35 @@ class Client extends Thread {
 		while (rep != 0) {
 			menu();
 			String userInput = this.scannerClient.nextLine();
-			rep = Integer.parseInt(userInput);
-
-			switch (rep) {
-				case 0: {
-					System.out.println("A bientôt !");
-					break;
-				}
-
-				case 1: {
-					optionMessage();
-					break;
-				}
-
-				case 2: {
-					optionCommandes();
-					break;
-				}
-				default: {
-					System.out.println("Veuillez entrer une option valide");
-					break;
-				}
+			if (userInput.equals("")){
+				System.out.println("Veuillez entrer une option valide \n");
 			}
-			System.out.println("\n Appuyez sur Entrée pour continuer");
-			userInput = this.scannerClient.nextLine();
+			else{
+				rep = Integer.parseInt(userInput);
+
+				switch (rep) {
+					case 0: {
+						System.out.println("A bientôt !");
+						break;
+					}
+
+					case 1: {
+						optionMessage();
+						break;
+					}
+
+					case 2: {
+						optionCommandes();
+						break;
+					}
+					default: {
+						System.out.println("Veuillez entrer une option valide \n");
+						break;
+					}
+				}
+				System.out.println("\n Appuyez sur Entrée pour continuer");
+				userInput = this.scannerClient.nextLine();
+			}
 		}
 		try {
 			socket.close();

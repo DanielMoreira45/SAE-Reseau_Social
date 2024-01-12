@@ -37,6 +37,14 @@ class Serveur {
         return this.donnees.get(user).get("abo");
     }
 
+    public HashSet<String> messagesAbonnement(String user){
+        HashSet<String> messages = new HashSet<>();
+        for (Object follow : getAbo(user)){
+            messages.add(getMessages(follow.toString()).toString());
+        }
+        return messages;
+    }
+
     public void addPersonne(String user) {
         HashSet<Object> setMessage = new HashSet<>();
         HashSet<Object> setabo = new HashSet<>();
