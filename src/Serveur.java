@@ -45,6 +45,16 @@ class Serveur {
         return messages;
     }
 
+    public void supprimerMessage(String message){       //en cours d'implémentation !!
+        String[] messages = message.split("_");
+        // System.out.println(messages[1]);
+        // System.out.println(this.donnees.get(messages[0]).get("message"));
+        // System.out.println(this.donnees.get(messages[0]).get("message").contains(messages[1]));
+        // this.donnees.get(messages[0]).get("message").remove(messages[1]);
+        HashSet<Object> messagesUser = this.getMessages(messages[0]);
+        System.out.println(messagesUser);
+    }
+
     public void addPersonne(String user) {
         HashSet<Object> setMessage = new HashSet<>();
         HashSet<Object> setabo = new HashSet<>();

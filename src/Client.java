@@ -59,10 +59,11 @@ class Client extends Thread {
 	}
 
 	public void removeMessage(String contenu){
-		Message message = null;
+		String commande = "delete-" + this.pseudo + "_";
+		Message message = new Message(commande, this);
 		for (Message msg : lesMessages){
 			if (contenu.equals(msg.getContenu())){
-				message = msg;
+				message.setContenu(commande + msg.getContenu());
 			}
 		}
 		this.envoiMessage(message, socket);
@@ -92,7 +93,7 @@ class Client extends Thread {
 	}
 
 	public void messagesAbonnements(String user){
-		String message = "messages_abonnements";
+		String message = "posts_abonnements";
 		Message msg = new Message(message + "-" + user, this);
 		envoiMessage(msg, socket);
 		Message receivedMessage = this.recevoirMessage();
@@ -164,7 +165,7 @@ class Client extends Thread {
 				System.out.println(this.listeMessages(this.pseudo));
 				break;
 
-			case "/posts_abonnement":
+			case "/posts_abonnements":
 				this.messagesAbonnements(this.pseudo);
 				break;
 
@@ -174,7 +175,7 @@ class Client extends Thread {
 
 			case "/delete":
 				System.out.println("Quel message souhaitez-vous supprimer ? ");
-				System.out.println(this.lesMessages);
+				System.out.println(this.listeMessages(this.pseudo));
 				String msg = this.scannerClient.nextLine();
 				this.removeMessage(msg);
 				break;

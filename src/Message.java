@@ -54,6 +54,10 @@ class Message implements Serializable {
 		return json;
 	}
 
+	public void setContenu(String contenu){
+		this.contenu = contenu;
+	}
+
 	@Override
 	public String toString() {
 		return "Envoyé le : " + dateHeure + "  de : " + expediteur + " -->  " + contenu;

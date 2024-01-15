@@ -60,8 +60,12 @@ class ClientHandler implements Runnable {
                             this.objectOutputStream.flush();
                             this.objectOutputStream.reset();
                             break;
+
+                        case "delete":
+                            this.serveur.supprimerMessage(pseudo);
+                            break;
                         
-                        case "messages_abonnements":
+                        case "posts_abonnements":
                             Message outputt = new Message(this.serveur.messagesAbonnement(user).toString(), "Serveur");
                             this.objectOutputStream.writeObject(outputt);
                             this.objectOutputStream.flush();
