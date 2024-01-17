@@ -47,7 +47,7 @@ class ClientHandler implements Runnable {
                             this.serveur.removeAbo(user, pseudo);
                             break;
 
-                        case "listefollow":
+                        case "liste_follow":
                             Message out = new Message(this.serveur.getAbo(user).toString(), "Serveur");
                             this.objectOutputStream.writeObject(out);
                             this.objectOutputStream.flush();

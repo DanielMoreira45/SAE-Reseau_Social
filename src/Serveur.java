@@ -40,7 +40,7 @@ class Serveur {
     public HashSet<String> messagesAbonnement(String user){
         HashSet<String> messages = new HashSet<>();
         for (Object follow : getAbo(user)){
-            messages.add(getMessages(follow.toString()).toString());
+            messages.add("(" + follow.toString() + ", " + getMessages(follow.toString()).toString() + ")");
         }
         return messages;
     }

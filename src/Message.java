@@ -41,6 +41,10 @@ class Message implements Serializable {
 		return nbLikes;
 	}
 
+	public void setNbLikes(int likes){
+		this.nbLikes = likes;
+	}
+
 	public int getId() {
 		return id;
 	}

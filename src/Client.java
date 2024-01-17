@@ -14,13 +14,11 @@ class Client extends Thread {
 	private ObjectInputStream objectInputStream;
 	private ObjectOutputStream objectOutputStream;
 	private HashSet<Message> lesMessages;
-	private List<String> abonnements;
 
 	public Client(String pseudo, Scanner scannerClient) {
 		this.pseudo = pseudo;
 		this.scannerClient = scannerClient;
 		lesMessages = new HashSet<>();
-		abonnements = new ArrayList<>();
 		try {
 			this.socket = new Socket("127.0.0.1", 4444);
 			this.objectInputStream = null;
@@ -29,6 +27,10 @@ class Client extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public HashSet<Message> getMessages(){
+		return this.lesMessages;
 	}
 
 	public void sAbonner(String user) {
@@ -44,7 +46,7 @@ class Client extends Thread {
 	}
 
 	public void listeAbonnements(String user) {
-		String message = "listefollow";
+		String message = "liste_follow";
 		Message msg = new Message(message + "-" + user, this);
 		this.envoiMessage(msg, socket);
 		Message receivedMessage = this.recevoirMessage();
@@ -92,13 +94,61 @@ class Client extends Thread {
 		System.out.println(receivedMessage.getContenu());
 	}
 
-	public void messagesAbonnements(String user){
+	public void messagesAbonnements() {
 		String message = "posts_abonnements";
-		Message msg = new Message(message + "-" + user, this);
+		Message msg = new Message(message + "-" + this.getPseudo(), this);
 		envoiMessage(msg, socket);
 		Message receivedMessage = this.recevoirMessage();
-		System.out.println(receivedMessage.getContenu());
+		
+		parseReceivedMessage(receivedMessage.getContenu());
 	}
+
+	private void parseReceivedMessage(String message) {
+		int startIndex = message.indexOf('(');
+		int endIndex = message.indexOf(')');
+
+		if (startIndex != -1 && endIndex != -1) {
+			String expediteur = message.substring(startIndex + 1, message.indexOf(","));
+
+			int braceStartIndex = message.indexOf("[{", endIndex);
+			int braceEndIndex = message.indexOf("}])", braceStartIndex);
+
+			if (braceEndIndex != -1) {
+				String messagesPart = message.substring(braceStartIndex + 2, braceEndIndex);
+				String[] messagesArray = messagesPart.split("}, \\{");
+				List<String> listeMsg = new ArrayList<>();
+
+				System.out.println("Posts de " + expediteur + " >>>>>> \n");
+
+				for (String messagePart : messagesArray) {
+					String contenuMessage = messagePart.replaceAll("[\\[\\]{}]", "");
+					String[] parts = contenuMessage.split(", ");
+
+					String nbLikes = "";
+					String contenu = "";
+
+					for (String partie : parts){
+						if (partie.startsWith("nbLikes=")){
+							nbLikes = partie.substring(8);
+						}
+						if (partie.startsWith("contenu=")){
+							contenu = partie.substring(8);
+						}
+						if (!nbLikes.equals("") && !contenu.equals("")){
+							listeMsg.add("--> " + contenu + " | Nombre de likes : " + nbLikes);
+						}
+					}
+				}
+				for (String msg : listeMsg){
+					System.out.println(msg);
+				}
+			}
+			else {
+				System.out.println("Aucun message d'abonnements trouvé.");
+			}
+		}
+	}
+	
 
 	public int nbAbonnes() {
 		return 0; // TODO
@@ -132,7 +182,7 @@ class Client extends Thread {
 		System.out.println("Voici la liste des commandes disponibles :");
 		System.out.println("--> /follow");
 		System.out.println("--> /unfollow");
-		System.out.println("--> /listefollow");
+		System.out.println("--> /liste_follow");
 		System.out.println("--> /like");
 		System.out.println("--> /mes_posts");
 		System.out.println("--> /posts_abonnements");
@@ -147,6 +197,7 @@ class Client extends Thread {
 				this.listeClients(this.pseudo);
 				String user = this.scannerClient.nextLine();
 				this.sAbonner(user);
+				System.out.println("Vous suivez désormais " + user + " !");
 				break;
 
 			case "/unfollow":
@@ -155,9 +206,10 @@ class Client extends Thread {
 				this.listeAbonnements(this.pseudo);
 				String user2 = this.scannerClient.nextLine();
 				this.seDesabonner(user2);
+				System.out.println("Vous ne suivez plus " + user2);
 				break;
 
-			case "/listefollow":
+			case "/liste_follow":
 				this.listeAbonnements(this.pseudo);
 				break;
 
@@ -166,7 +218,7 @@ class Client extends Thread {
 				break;
 
 			case "/posts_abonnements":
-				this.messagesAbonnements(this.pseudo);
+				this.messagesAbonnements();
 				break;
 
 			case "/like":
@@ -178,6 +230,7 @@ class Client extends Thread {
 				System.out.println(this.listeMessages(this.pseudo));
 				String msg = this.scannerClient.nextLine();
 				this.removeMessage(msg);
+				System.out.println("Message supprimé avec succès");
 				break;
 
 			case "/exit":
