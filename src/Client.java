@@ -3,8 +3,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 class Client extends Thread {
@@ -99,56 +101,14 @@ class Client extends Thread {
 		Message msg = new Message(message + "-" + this.getPseudo(), this);
 		envoiMessage(msg, socket);
 		Message receivedMessage = this.recevoirMessage();
-		
-		parseReceivedMessage(receivedMessage.getContenu());
+		System.out.println(receivedMessage.getContenu());
 	}
 
-	private void parseReceivedMessage(String message) {
-		int startIndex = message.indexOf('(');
-		int endIndex = message.indexOf(')');
-
-		if (startIndex != -1 && endIndex != -1) {
-			String expediteur = message.substring(startIndex + 1, message.indexOf(","));
-
-			int braceStartIndex = message.indexOf("[{", endIndex);
-			int braceEndIndex = message.indexOf("}])", braceStartIndex);
-
-			if (braceEndIndex != -1) {
-				String messagesPart = message.substring(braceStartIndex + 2, braceEndIndex);
-				String[] messagesArray = messagesPart.split("}, \\{");
-				List<String> listeMsg = new ArrayList<>();
-
-				System.out.println("Posts de " + expediteur + " >>>>>> \n");
-
-				for (String messagePart : messagesArray) {
-					String contenuMessage = messagePart.replaceAll("[\\[\\]{}]", "");
-					String[] parts = contenuMessage.split(", ");
-
-					String nbLikes = "";
-					String contenu = "";
-
-					for (String partie : parts){
-						if (partie.startsWith("nbLikes=")){
-							nbLikes = partie.substring(8);
-						}
-						if (partie.startsWith("contenu=")){
-							contenu = partie.substring(8);
-						}
-						if (!nbLikes.equals("") && !contenu.equals("")){
-							listeMsg.add("--> " + contenu + " | Nombre de likes : " + nbLikes);
-						}
-					}
-				}
-				for (String msg : listeMsg){
-					System.out.println(msg);
-				}
-			}
-			else {
-				System.out.println("Aucun message d'abonnements trouvé.");
-			}
-		}
+	public void liker(String messageLike){
+		String message = "like";
+		Message msg = new Message(message + "-" + this.getPseudo() + "_" + messageLike, this);
+		envoiMessage(msg, socket);
 	}
-	
 
 	public int nbAbonnes() {
 		return 0; // TODO
@@ -222,7 +182,10 @@ class Client extends Thread {
 				break;
 
 			case "/like":
-				// TODO
+				this.messagesAbonnements();
+				System.out.println("Quel message souhaitez-vous liker ?");
+				String msgLike = scannerClient.nextLine();
+				this.liker(msgLike);
 				break;
 
 			case "/delete":

@@ -35,7 +35,7 @@ class ClientHandler implements Runnable {
                 serveur.getMessages(user).add(receivedMessage.getJson());
 
                 if(receivedMessage.getContenu().contains("-")){
-                    String[] message = receivedMessage.getContenu().split("-", 2);
+                    String[] message = receivedMessage.getContenu().split("-", 3);
                     String commande = message[0];
                     String pseudo = message[1];
                     switch (commande) {
@@ -59,6 +59,10 @@ class ClientHandler implements Runnable {
                             this.objectOutputStream.writeObject(output);
                             this.objectOutputStream.flush();
                             this.objectOutputStream.reset();
+                            break;
+                        
+                        case "like":
+                            this.serveur.likeMessage(pseudo);
                             break;
 
                         case "delete":

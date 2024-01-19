@@ -2,8 +2,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.json.JSONObject;
@@ -37,22 +40,83 @@ class Serveur {
         return this.donnees.get(user).get("abo");
     }
 
-    public HashSet<String> messagesAbonnement(String user){
-        HashSet<String> messages = new HashSet<>();
-        for (Object follow : getAbo(user)){
-            messages.add("(" + follow.toString() + ", " + getMessages(follow.toString()).toString() + ")");
+    public HashMap<String, HashSet<Message>> messagesAbonnement(String utilisateur) {
+        HashMap<String, HashSet<Message>> messages = new HashMap<>();
+        HashSet<Object> abonnements = getAbo(utilisateur);
+
+        for (Object abonnement : abonnements) {
+            if (abonnement instanceof String) {
+                String utilisateurAbonne = (String) abonnement;
+                HashMap<String, HashSet<Object>> infosAbonne = this.donnees.get(utilisateurAbonne);
+
+                if (infosAbonne.containsKey("message")) {
+                    HashSet<Object> ensembleMessages = infosAbonne.get("message");
+                    HashSet<Message> messagesAbo = new HashSet<>();
+
+                    for (Object messageObj : ensembleMessages) {
+                        if (messageObj instanceof HashMap) {
+                            HashMap<String, Object> messMap = (HashMap<String, Object>) messageObj;
+                            Message mes = new Message(Integer.valueOf((String) messMap.get("id")), (String) messMap.get("contenu"), Integer.valueOf((String) messMap.get("nbLikes")), utilisateurAbonne);
+                            messagesAbo.add(mes);
+                        }
+                    }
+                    messages.put(utilisateurAbonne, messagesAbo);
+                }
+            }
         }
         return messages;
     }
 
-    public void supprimerMessage(String message){       //en cours d'implémentation !!
-        String[] messages = message.split("_");
-        // System.out.println(messages[1]);
-        // System.out.println(this.donnees.get(messages[0]).get("message"));
-        // System.out.println(this.donnees.get(messages[0]).get("message").contains(messages[1]));
-        // this.donnees.get(messages[0]).get("message").remove(messages[1]);
-        HashSet<Object> messagesUser = this.getMessages(messages[0]);
-        System.out.println(messagesUser);
+    public void likeMessage(String commandeUser){        
+        String[] message = commandeUser.split("_", 2);
+        String pseudoUser = message[0];
+        String messageLike = message[1];
+        HashMap<String, HashSet<Message>> messagesDesAbonnements = this.messagesAbonnement(pseudoUser);
+        
+        System.out.println(messagesDesAbonnements);
+        
+        for (String abonnement : messagesDesAbonnements.keySet()){
+            System.out.println(abonnement);
+            HashSet<Message> infos = messagesDesAbonnements.get(abonnement);
+
+            for (Message msg : infos){
+                if (msg.getContenu().contains(messageLike)){
+                    int likes = msg.getNbLikes();
+                    msg.setNbLikes(likes + 1);
+                }
+            }
+        }
+    }
+
+    public void supprimerMessage(String commandeUser){
+    String[] message = commandeUser.split("_", 2);
+    String pseudoUser = message[0];
+    String messageDel = message[1];
+    HashSet<Object> messagesObj = this.getMessages(pseudoUser);
+    
+    System.out.println(messagesObj);
+
+    HashSet<Message> messages = new HashSet<>();
+
+    // for (Object messageObj : messagesObj) {
+    //     if (messageObj instanceof HashMap) {
+            
+    //     }
+    // }
+    
+    // for (String abonnement : messagesDesAbonnements.keySet()){
+    //     System.out.println(abonnement);
+    //     HashSet<Message> infos = messagesDesAbonnements.get(abonnement);
+
+    //     for (Message msg : infos){
+    //         if (msg.getContenu().contains(messageLike)){
+    //             int likes = msg.getNbLikes();
+    //             System.out.println(likes);
+    //             msg.setNbLikes(likes + 1);
+    //             System.out.println(msg.getNbLikes());
+    //         }
+    //     }
+    // }
     }
 
     public void addPersonne(String user) {
