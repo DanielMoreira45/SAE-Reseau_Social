@@ -68,11 +68,10 @@ class Client extends Thread {
 		for (Message msg : lesMessages){
 			if (contenu.equals(msg.getContenu())){
 				message.setContenu(commande + msg.getContenu());
+				lesMessages.remove(message);
 			}
 		}
 		this.envoiMessage(message, socket);
-		Message receivedMessage = this.recevoirMessage();
-		lesMessages.remove(receivedMessage);
 	}
 
 	public String listeMessages(String user){

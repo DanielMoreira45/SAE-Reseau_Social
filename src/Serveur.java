@@ -57,6 +57,7 @@ class Serveur {
                         if (messageObj instanceof HashMap) {
                             HashMap<String, Object> messMap = (HashMap<String, Object>) messageObj;
                             Message mes = new Message(Integer.valueOf((String) messMap.get("id")), (String) messMap.get("contenu"), Integer.valueOf((String) messMap.get("nbLikes")), utilisateurAbonne);
+                            // lié avec le client concerné ?
                             messagesAbo.add(mes);
                         }
                     }
@@ -89,34 +90,31 @@ class Serveur {
     }
 
     public void supprimerMessage(String commandeUser){
-    String[] message = commandeUser.split("_", 2);
-    String pseudoUser = message[0];
-    String messageDel = message[1];
-    HashSet<Object> messagesObj = this.getMessages(pseudoUser);
-    
-    System.out.println(messagesObj);
+        String[] message = commandeUser.split("_", 2);
+        String pseudoUser = message[0];
+        String messageDel = message[1];
+        HashSet<Object> messagesObj = this.donnees.get(pseudoUser).get("message");
+        HashSet<Message> lesMessages = new HashSet<>();
 
-    HashSet<Message> messages = new HashSet<>();
+        for (Object messageObj : messagesObj) {
+            if (messageObj instanceof HashMap) {
+                HashMap<String, Object> messMap = (HashMap<String, Object>) messageObj;
+                Message mes = new Message(Integer.valueOf((String) messMap.get("id")), (String) messMap.get("contenu"), Integer.valueOf((String) messMap.get("nbLikes")), pseudoUser);
+                if (!mes.getContenu().contains("_")){
+                    lesMessages.add(mes);
+                }
+            }
+        }
 
-    // for (Object messageObj : messagesObj) {
-    //     if (messageObj instanceof HashMap) {
-            
-    //     }
-    // }
-    
-    // for (String abonnement : messagesDesAbonnements.keySet()){
-    //     System.out.println(abonnement);
-    //     HashSet<Message> infos = messagesDesAbonnements.get(abonnement);
-
-    //     for (Message msg : infos){
-    //         if (msg.getContenu().contains(messageLike)){
-    //             int likes = msg.getNbLikes();
-    //             System.out.println(likes);
-    //             msg.setNbLikes(likes + 1);
-    //             System.out.println(msg.getNbLikes());
-    //         }
-    //     }
-    // }
+        for (Message mess : lesMessages){
+            if (mess.getContenu().contains(messageDel)){
+                lesMessages.remove(mess);
+                System.out.println(this.donnees.get(pseudoUser));
+                this.donnees.get(pseudoUser).get("message").clear();
+                this.donnees.get(pseudoUser).get("message").add("");
+                System.out.println(this.donnees.get(pseudoUser));
+            }
+        }
     }
 
     public void addPersonne(String user) {
