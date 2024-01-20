@@ -201,10 +201,8 @@ class Client extends Thread {
 				this.scannerClient.close();
 				break;
 
-			case "/exitall":
-				System.out.println("A bientôt !");
-				this.envoiMessage(new Message("exitall-serv", this), socket);
-				this.scannerClient.close();
+			case "/save":
+				this.envoiMessage(new Message("enregistre-serv", this), socket);
 				break;
 
 			default:

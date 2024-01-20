@@ -74,6 +74,9 @@ class ClientHandler implements Runnable {
                             this.objectOutputStream.writeObject(outputt);
                             this.objectOutputStream.flush();
                             this.objectOutputStream.reset();
+
+                        case "enregistre":
+                            this.serveur.enregistrement();
                             break;
 
                         case "exit":
